@@ -144,7 +144,7 @@ int main(int argc, char **argv) {
 
   ExitOnErr.setBanner(std::string(argv[0]) + ": error: ");
 
-  cl::ParseCommandLineOptions(argc, argv, "llvm .bc -> klee bc .kbc \n");
+  cl::ParseCommandLineOptions(argc, argv, "llvm .bc -> main.c \n");
 
   LLVMContext Context;
   Context.setDiagnosticHandler(
@@ -165,6 +165,10 @@ int main(int argc, char **argv) {
 
     M->setTargetTriple(TargetTriple);
     Function *F = M->getFunction(FunctionName);
+    if (!F) {
+	    errs() << "failed to find function " << FunctionName << "\n";
+	    exit(1);
+    }
     unsigned arg_size = F->arg_size();
     unsigned idx = 0;
     std::cout << "#include <stdint.h>" << std::endl;
